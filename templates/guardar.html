@@ -1,0 +1,145 @@
+{% extends "base.html" %} {% block content %}
+
+<!-- Masthead-->
+<header class="masthead bg-dark text-white text-center">
+<div id = "etnia">
+<h5></h5>
+</div>
+
+    <table id="tabla"></table>
+</header>
+
+<script>
+    var datos = JSON.parse( {{ tabla | tojson }});
+    var etnia = window.localStorage.getItem('etnia')
+    var cadena = ""
+    const filtrado = []
+    
+    let tabla_A = ""
+    if (etnia === "A") {
+        // tabla_A = `<table class="table"> <thead> <tr> <th scope="col">ID</th> <th scope="col">Afro-American_percentage</th><th scope="col">European_percentage</th> <th scope="col">Indigenous_percentage</th> </tr> </thead> <tbody>`
+        cadena="Afroecuatoriano";
+        var arrays = getKey(datos['Etnia'],"Afroecuatoriano")
+        
+        for (let index = 0; index < arrays.length; index++) {
+                    let ID = datos['ID'][`${arrays[index]}`]; 
+                    let A = datos['Afro-American_percentage'][`${arrays[index]}`];
+                    let E = datos['European_percentage'][`${arrays[index]}`];
+                    let I = datos['Indigenous_percentage'][`${arrays[index]}`];
+                    filtrado.push({ID:ID,A:A,E:E,I: I})
+                    
+                    // tabla_A+=` <tr> <th scope="row">${ID}</th><td>${A}</td><td>${E}</td><td>${I}</td> </tr>`
+                    console.log(ID+" "+A+" "+E+" "+I);
+        }
+        // tabla+=`</tbody></table>`
+        console.log(tabla_A)
+        console.log(filtrado)
+        
+        // const table = document.getElementById('tabla');
+        // const arr = filtrado
+        // for(const obj of arr){
+        //     const row = document.createElement('tr');
+        //     for(const val of Object.values(obj)){
+        //         const col = document.createElement('td');
+        //         col.textContent = val;
+        //         row.appendChild(col);
+        //     }
+        //     table.appendChild(row);
+        // }
+        
+        buildTable(filtrado)
+
+    }else if (etnia === "E") {
+        cadena = "EuroDesendiente"
+        var arrays = getKey(datos['Etnia'],"EuroDesendiente")
+        const tabla = "<table class=\"table\"> <thead> <tr> <th scope=\"col\">ID</th> <th scope=\"col\">Afro-American_percentage</th><th scope=\"col\">European_percentage</th> <th scope=\"col\">Indigenous_percentage</th> </tr> </thead> <tbody> "
+        for (let index = 0; index < arrays.length; index++) {
+            filtrado.push[{'ID':datos['ID'][`${arrays[index]}`],
+                        'Afro-American_percentage':datos['Afro-American_percentage'][`${arrays[index]}`],
+                        'European_percentage':datos['European_percentage'][`${arrays[index]}`],
+                        'Indigenous_percentage':datos['Indigenous_percentage'][`${arrays[index]}`]
+                    }]
+        const ID = datos['ID'][`${arrays[index]}`];
+        const A = datos['Afro-American_percentage'][`${arrays[index]}`];
+        const E = datos['European_percentage'][`${arrays[index]}`];
+        const I = datos['Indigenous_percentage'][`${arrays[index]}`];
+       
+        tabla+=" <tr> <th scope=\"row\">"+ID+"</th><td>"+A+"</td><td>"+E+"</td><td>"+I+"</td> </tr>"
+        console.log(ID+" "+A+" "+E+" "+I);
+        }
+        tabla+="</tbody></table>"
+        document.getElementById("tabla").innerHTML=tabla
+    }else if (etnia === 'I') {
+        const tabla = "<table class=\"table\"> <thead> <tr> <th scope=\"col\">ID</th> <th scope=\"col\">Afro-American_percentage</th><th scope=\"col\">European_percentage</th> <th scope=\"col\">Indigenous_percentage</th> </tr> </thead> <tbody> "
+        cadena = "Indigena"
+        var arrays = getKey(datos['Etnia'],"Indigena")
+        for (let index = 0; index < arrays.length; index++) {
+            filtrado.push[{'ID':datos['ID'][`${arrays[index]}`],
+                        'Afro-American_percentage':datos['Afro-American_percentage'][`${arrays[index]}`],
+                        'European_percentage':datos['European_percentage'][`${arrays[index]}`],
+                        'Indigenous_percentage':datos['Indigenous_percentage'][`${arrays[index]}`]
+                    }]
+        const ID = datos['ID'][`${arrays[index]}`];
+        const A = datos['Afro-American_percentage'][`${arrays[index]}`];
+        const E = datos['European_percentage'][`${arrays[index]}`];
+        const I = datos['Indigenous_percentage'][`${arrays[index]}`];
+        tabla+=" <tr> <th scope=\"row\">"+ID+"</th><td>"+A+"</td><td>"+E+"</td><td>"+I+"</td> </tr>"
+        console.log(ID+" "+A+" "+E+" "+I);
+        }
+        tabla+="</tbody></table>"
+        console.log(tabla)
+        // document.getElementById("tabla").innerHTML=tabla
+    }else if (etnia === "M") {
+        cadena = "Meztizo"
+        var arrays = getKey(datos['Etnia'],"Meztizo")
+        const tabla = "<table class=\"table\"> <thead> <tr> <th scope=\"col\">ID</th> <th scope=\"col\">Afro-American_percentage</th><th scope=\"col\">European_percentage</th> <th scope=\"col\">Indigenous_percentage</th> </tr> </thead> <tbody> "
+        for (let index = 0; index < arrays.length; index++) {
+            filtrado.push[{'ID':datos['ID'][`${arrays[index]}`],
+                        'Afro-American_percentage':datos['Afro-American_percentage'][`${arrays[index]}`],
+                        'European_percentage':datos['European_percentage'][`${arrays[index]}`],
+                        'Indigenous_percentage':datos['Indigenous_percentage'][`${arrays[index]}`]
+                    }]
+        const ID = datos['ID'][`${arrays[index]}`];
+        const A = datos['Afro-American_percentage'][`${arrays[index]}`];
+        const E = datos['European_percentage'][`${arrays[index]}`];
+        const I = datos['Indigenous_percentage'][`${arrays[index]}`];
+        console.log(ID+" "+A+" "+E+" "+I);
+        tabla+=" <tr> <th scope=\"row\">"+ID+"</th><td>"+A+"</td><td>"+E+"</td><td>"+I+"</td></tr>"
+        }
+        tabla+="</tbody></table>"
+        document.getElementById("tabla").innerHTML=tabla
+    }
+
+    document.getElementById('etnia').innerHTML = "<h5>"+cadena+"</h5>"
+    document.getElementById("tabla").innerHTML = tabla
+
+    console.log(filtrado)
+
+    function getKey(veg,cadena){
+        const arr = [];
+        obj = Object.keys(veg);
+        for (var x in obj){
+            if(veg[obj[x]] === cadena){
+                arr.push(x);
+            }
+        }
+        return arr;
+    }
+
+    function buildTable(data){
+    var table = document.getElementById('tabla');
+    const arr = data;
+    for(var obj of arr){
+        var row = document.createElement('tr');
+        for(var val of Object.values(obj)){
+            var col = document.createElement('td');
+            col.textContent = val;
+            row.appendChild(col);
+        }
+        table.appendChild(row);
+    }
+}
+
+
+</script>
+{% endblock %}

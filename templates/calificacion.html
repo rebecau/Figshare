@@ -1,0 +1,220 @@
+{% extends "base.html" %} {% block content %}
+<!-- Masthead-->
+<header class="masthead bg-dark text-white text-center">
+    <h2 class="text-center py-2">PERSONAS</h2>
+    <div id="carouselExampleInterval" class="carousel slide" data-bs-ride="carousel">
+        <div id="imagenes" class="imagenes">            
+            <div class="carousel-inner">
+            </div>
+        </div>
+    </div>
+    <div id="variable">
+    </div>
+    
+    <div id="slider-bar" >
+        <label class="text-light"><h3> Afroecuatoriano </h3></label>
+        <label></label>
+        <input type="range" class="bg-dark" id="sliderbar-A" name="rangeInput" value="33" min="0" max="100" onchange="updateTextInputA(this.value);">
+        <input type="number" id="textInput-A" value="33" min="0" max="100" onchange="updateSliderA(this.value)">
+        <br>
+        <label class="text-light"><h3> EuroDesendiente </h3></label>
+        <label></label>
+        <input type="range" class="bg-dark" id="sliderbar-E" value="33" name="rangeInput" min="0" max="100" onchange="updateTextInputE(this.value);">
+        <input type="number" id="textInput-E" value="33" min="0" max="100" onchange="updateSliderE(this.value)">
+        <br>
+        <label class="text-light"><h3> Indigena </h3></label>
+        <label></label>
+        <input type="range" class="bg-dark" id="sliderbar-I" value="34" name="rangeInput" min="0" max="100" onchange="updateTextInputI(this.value);">
+        <input type="number" id="textInput-I" value="34" min="0" max="100" onchange="updateSliderI(this.value)">
+        <br>
+        
+        
+        <button type="button" onclick="SendInfo()" class="btn btn-dark"><h2>
+            <a href="/guardar">
+                GUARDAR
+            </a>
+        </h2></button>
+
+    </div>
+</header>
+
+<script>
+
+    window.localStorage.setItem('A',33); 
+    window.localStorage.setItem('E',33); 
+    window.localStorage.setItem('I',34); 		
+    
+    var posicion = window.localStorage.getItem('position');
+    var etnia = window.localStorage.getItem('etnia');
+    
+    var url = {{ personas | tojson }};
+    var id = {{ ids | tojson }} ;
+    var A = {{ A | tojson }};
+    var E =  {{ E | tojson }};
+    var I = {{ I | tojson }};
+
+    var div = document.getElementById("imagenes");
+    var newcontent = "<img src="+url[posicion]+" style=\"width:300px;height: 300px ;\" alt=\"...\">  <div class=\"carousel-caption d-none d-md-block\"> <h5>"+id[posicion]+"</h5> </div>";
+    div.innerHTML = newcontent;
+    
+    var contenido = document.getElementById("variable");
+    var cadena = "";
+    if (etnia ==='M') {
+        cadena = 'Meztizo';
+    }else if(etnia === 'E'){
+        cadena = 'EuroDesendiente';
+    }else if (etnia === 'A'){
+        cadena = 'Afroecuatoriano';
+    }else if (etnia === 'I'){
+        cadena = 'Indigena';
+    }
+
+    var new_variable = "<div> <br> <h1>"+cadena+"</h1> </div>";
+    console.log(new_variable);
+    contenido.innerHTML = new_variable;
+
+    var updateSliderA = (val) => {
+        // document.getElementById("skliderbar-A").value=parseInt(val);
+        var num_A = parseInt(val);
+
+        var sobrante = 100 - num_A;
+
+        var num_E = window.localStorage.getItem('E')
+
+        var num_I = window.localStorage.getItem('I')
+
+        if (sobrante == 0) {
+            num_E=0;
+            num_I=0;
+        }else if (sobrante % 2 == 0) {
+            num_E = sobrante/2;
+            num_I = sobrante/2;
+        }else {
+            num_E = (sobrante-1)/2;
+            num_I = (sobrante-1)/2 + 1;
+        }
+
+        document.getElementById('textInput-E').value=num_E
+        document.getElementById('textInput-I').value=num_I
+
+
+        window.localStorage.setItem('A',val);
+        window.localStorage.setItem('E',num_E);
+        window.localStorage.setItem('I',num_I);
+
+        document.getElementById("sliderbar-A").value=val;
+        document.getElementById("sliderbar-E").value=num_E;
+        document.getElementById("sliderbar-I").value=num_I;
+        
+    }
+
+    var updateSliderE = (val) => {
+        var num_A = parseInt(window.localStorage.getItem('A'));
+        var num_E = parseInt(val);
+        var piv_E = parseInt(window.localStorage.getItem('E'));
+        var num_I = parseInt(window.localStorage.getItem('I'));
+        
+        var sobrante = 100-num_A;
+        if (num_E > sobrante) {
+            num_E=sobrante;
+            num_I=0;
+            document.getElementById('textInput-E').value=sobrante;
+            document.getElementById('textInput-I').value=0;
+        }else if (num_E < 0) {
+            num_E=0;
+            num_I=sobrante;
+            document.getElementById('textInput-E').value=0;
+            document.getElementById('textInput-I').value=sobrante;
+        }else {
+            var distancia = 0;
+            if (num_E>piv_E) {
+                distancia = num_E-piv_E;
+                num_I -= distancia;
+                document.getElementById('textInput-I').value=num_I;
+            }else{
+                distancia = piv_E-num_E;
+                num_I += distancia;
+                document.getElementById('textInput-I').value=num_I;
+            }
+        }
+        
+        window.localStorage.setItem('I',num_I);
+        window.localStorage.setItem('E',num_E); 
+
+        document.getElementById("sliderbar-E").value=num_E;
+        document.getElementById("sliderbar-I").value=num_I;
+
+    }
+
+    var updateSliderI = (val) => {
+        var num_A = parseInt(window.localStorage.getItem('A'));
+        var num_E = parseInt(window.localStorage.getItem('E'));
+        var num_I = parseInt(val);
+        var piv_I = parseInt(window.localStorage.getItem('I'));
+
+        var sobrante = 100-num_A;
+        if (num_I > sobrante) {
+            num_I = sobrante;
+            num_E = 0;
+            document.getElementById('textInput-I').value=sobrante;
+            document.getElementById('textInput-E').value=0;
+        }else if (num_I < 0) {
+            num_I = 0;
+            num_E = sobrante;
+            document.getElementById('textInput-I').value=0;
+            document.getElementById('textInput-E').value=sobrante;
+        }else {
+            var distancia = 0;
+            if (num_I>piv_I) {
+                distancia = num_I-piv_I;
+                num_E -= distancia;
+                document.getElementById('textInput-E').value=num_E;
+            }else{
+                distancia = piv_I-num_I;
+                num_E += distancia;
+                document.getElementById('textInput-E').value=num_E;
+            }
+        }
+        
+        window.localStorage.setItem('I',num_I);
+        window.localStorage.setItem('E',num_E); 
+
+        document.getElementById("sliderbar-E").value=num_E;
+        document.getElementById("sliderbar-I").value=num_I;
+      
+    }
+
+
+    
+    var updateTextInputA = (val) => {
+        document.getElementById('textInput-A').value=val;
+        window.localStorage.setItem('A',val); 
+        updateSliderA(val); 
+    }
+
+    var updateTextInputE = (val) => {
+        document.getElementById('textInput-E').value=val;
+        updateSliderE(val);
+    }
+
+    var updateTextInputI = (val) => {
+        document.getElementById('textInput-I').value=val;
+        updateSliderI(val);
+    }
+
+    var SendInfo = () => {
+        let userinfo = {
+            'ID': [id[posicion]],
+            'Etnia': [cadena],
+            'Afro-American_percentage': [window.localStorage.getItem('A')],
+            'European_percentage': [window.localStorage.getItem('E')],
+            'Indigenous_percentage': [window.localStorage.getItem('I')]
+        }
+        const request = new XMLHttpRequest();
+        request.open('POST',`/guardar/${JSON.stringify(userinfo)}`);
+        request.send();
+
+    }
+</script>
+
+{% endblock %}
